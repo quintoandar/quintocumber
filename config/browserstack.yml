@@ -1,0 +1,21 @@
+server: hub-cloud.browserstack.com
+user: BROWSERSTACK_USERNAME
+key: BROWSERSTACK_ACCESS_KEY
+
+common_caps:
+  project: E2E
+  browserstack.debug: true
+
+browser_caps:
+  chrome:
+    browser: chrome
+    version: 59
+    os: windows
+    os_version: 10
+    resolution: 1366x768
+  safari:
+    browser: safari
+    version: 9.1
+    os: OS X
+    os_version: El Capitan
+    resolution: 1600x1200
