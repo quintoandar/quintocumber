@@ -10,30 +10,37 @@ BROWSERSTACK_CONFIG = BROWSERSTACK_DEFAULT_CONFIG.merge(BROWSERSTACK_PROJECT_CON
 BROWSERSTACK_CONFIG['user'] = ENV['BROWSERSTACK_USERNAME'] || BROWSERSTACK_CONFIG['user']
 BROWSERSTACK_CONFIG['key'] = ENV['BROWSERSTACK_ACCESS_KEY'] || BROWSERSTACK_CONFIG['key']
 
-#Register browserstack remote driver into Capybara context
-Capybara.register_driver :browserstack do |app|
+#Only user browserstack if credentials are set
+if BROWSERSTACK_CONFIG['user'] && BROWSERSTACK_CONFIG['key']
+  #Register browserstack remote driver into Capybara context
+  Capybara.register_driver :browserstack do |app|
 
-  #check if target browser is properly configured in browsertack.yaml
-  #if no target browser is defined, skip verification due to later override
-  if ENV['TEST_BROWSER'] && BROWSERSTACK_CONFIG['browser_caps'][ENV['TEST_BROWSER']].nil?
-    raise 'Remote browser not configured in browsertack.yaml'
+    #check if target browser is properly configured in browsertack.yaml
+    #if no target browser is defined, skip verification due to later override
+    if ENV['TEST_BROWSER'] && BROWSERSTACK_CONFIG['browser_caps'][ENV['TEST_BROWSER']].nil?
+      raise 'Remote browser not configured in browsertack.yaml'
+    end
+
+    test_browser = ENV['TEST_BROWSER'] || 'chrome'
+
+    #merge common capabilities and browser capabilities (if not browser is set, deafults to chrome)
+    @caps = BROWSERSTACK_CONFIG['common_caps'].merge(BROWSERSTACK_CONFIG['browser_caps'][test_browser])
+
+    #sets timestamp as build name along with target browser
+    @caps['build'] = "#{Time.now.utc.iso8601} - #{test_browser}"
+
+    #all set, instanciate new remote broser
+    Capybara::Selenium::Driver.new(app,
+      :browser => :remote,
+      :url => "http://#{BROWSERSTACK_CONFIG['user']}:#{BROWSERSTACK_CONFIG['key']}@#{BROWSERSTACK_CONFIG['server']}/wd/hub",
+      :desired_capabilities => @caps
+    )
   end
-
-  test_browser = ENV['TEST_BROWSER'] || 'chrome'
-
-  #merge common capabilities and browser capabilities (if not browser is set, deafults to chrome)
-  @caps = BROWSERSTACK_CONFIG['common_caps'].merge(BROWSERSTACK_CONFIG['browser_caps'][test_browser])
-
-  #sets timestamp as build name along with target browser
-  @caps['build'] = "#{Time.now.utc.iso8601} - #{test_browser}"
-
-  #all set, instanciate new remote broser
-  Capybara::Selenium::Driver.new(app,
-    :browser => :remote,
-    :url => "http://#{BROWSERSTACK_CONFIG['user']}:#{BROWSERSTACK_CONFIG['key']}@#{BROWSERSTACK_CONFIG['server']}/wd/hub",
-    :desired_capabilities => @caps
-  )
+  
+  #set browserstack as default browser
+  Capybara.default_driver = :browserstack
 end
+
 
 #Re-register browserstack remote browser before each scenario run to ensure 
 #browserstack will receive scenario name as test name
