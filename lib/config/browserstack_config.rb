@@ -2,7 +2,11 @@ require 'capybara/cucumber'
 
 #Get browserstack configuration from browserstack.yml 
 #and override credentials if credentials are set in env variables
-BROWSERSTACK_CONFIG = YAML.load(File.read(File.join(File.dirname(__FILE__), "./browserstack.yml")))
+BROWSERSTACK_DEFAULT_CONFIG = YAML.load(File.read(File.join(File.dirname(__FILE__), "./browserstack.yml")))
+BROWSERSTACK_PROJECT_CONFIG = YAML.load(File.read(File.join(Dir.pwd, "./browserstack.yml"))) || Hash.new
+
+BROWSERSTACK_CONFIG = BROWSERSTACK_DEFAULT_CONFIG.merge(BROWSERSTACK_PROJECT_CONFIG)
+
 BROWSERSTACK_CONFIG['user'] = ENV['BROWSERSTACK_USERNAME'] || BROWSERSTACK_CONFIG['user']
 BROWSERSTACK_CONFIG['key'] = ENV['BROWSERSTACK_ACCESS_KEY'] || BROWSERSTACK_CONFIG['key']
 
@@ -53,3 +57,4 @@ Before do |scenario|
     Capybara.current_driver = :browserstack
   end
 end
+

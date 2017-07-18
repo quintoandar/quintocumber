@@ -1,11 +1,6 @@
 server: hub-cloud.browserstack.com
-user: BROWSERSTACK_USERNAME
-key: BROWSERSTACK_ACCESS_KEY
-
 common_caps:
-  project: E2E
-  browserstack.debug: true
-
+  project: UNKOWN PROJECT
 browser_caps:
   chrome:
     browser: chrome
