@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["dqueiroz@quintoandar.com.br"]
 
   spec.summary       = %q{Cucumber on steroids}
-  spec.description   = %q{Cucumber with some additional support: Capybara, Browsertack and Allure reports}
+  spec.description   = %q{Cucumber with some additional support: Capybara, Browsertack, Allure reports, Rspec and SitePrism}
   spec.homepage      = "https://github.com/quintoandar/quintocumber"
   spec.license       = "MIT"
 
