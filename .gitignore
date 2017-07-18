@@ -1,3 +1,4 @@
 tmp/
 .DS_Store
 Gemfile.lock
+quintocumber-*.gem
