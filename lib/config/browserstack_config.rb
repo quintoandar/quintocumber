@@ -3,7 +3,14 @@ require 'capybara/cucumber'
 #Get browserstack configuration from browserstack.yml 
 #and override credentials if credentials are set in env variables
 BROWSERSTACK_DEFAULT_CONFIG = YAML.load(File.read(File.join(File.dirname(__FILE__), "./browserstack.yml")))
-BROWSERSTACK_PROJECT_CONFIG = YAML.load(File.read(File.join(Dir.pwd, "./browserstack.yml"))) || Hash.new
+
+browserstack_project_config_filename = File.join(Dir.pwd, "./browserstack.yml")
+if File.file?(browserstack_project_config_filename)
+  BROWSERSTACK_PROJECT_CONFIG = YAML.load(File.read(browserstack_project_config_filename)) || Hash.new
+else
+  BROWSERSTACK_PROJECT_CONFIG = Hash.new
+end
+
 
 BROWSERSTACK_CONFIG = BROWSERSTACK_DEFAULT_CONFIG.merge(BROWSERSTACK_PROJECT_CONFIG)
 
