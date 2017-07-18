@@ -4,6 +4,7 @@ require 'rspec'
 require 'capybara/cucumber'
 require 'site_prism'
 require 'allure-cucumber'
+require 'rspec/expectations'
 
 Capybara.default_max_wait_time = 10
 Capybara.save_path = "screenshots/"
