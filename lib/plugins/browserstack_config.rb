@@ -29,7 +29,6 @@ if BROWSERSTACK_CONFIG['user'] && BROWSERSTACK_CONFIG['key']
 
     #merge common capabilities and browser capabilities (if not browser is set, deafults to chrome)
     BROWSERSTACK_CONFIG['common_caps'] = BROWSERSTACK_CONFIG['common_caps'] || {}
-    puts BROWSERSTACK_CONFIG['common_caps']
     @caps = BROWSERSTACK_CONFIG['common_caps'].merge(BROWSERSTACK_CONFIG['browser_caps'][TEST_BROWSER])
 
     #sets timestamp as build name along with target browser
