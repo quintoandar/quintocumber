@@ -11,7 +11,6 @@ else
   BROWSERSTACK_PROJECT_CONFIG = Hash.new
 end
 
-
 BROWSERSTACK_CONFIG = BROWSERSTACK_DEFAULT_CONFIG.merge(BROWSERSTACK_PROJECT_CONFIG)
 
 BROWSERSTACK_CONFIG['user'] = ENV['BROWSERSTACK_USERNAME'] || BROWSERSTACK_CONFIG['user']
@@ -28,13 +27,16 @@ if BROWSERSTACK_CONFIG['user'] && BROWSERSTACK_CONFIG['key']
       raise 'Remote browser not configured in browsertack.yaml'
     end
 
-    test_browser = ENV['TEST_BROWSER'] || 'chrome'
+    
 
     #merge common capabilities and browser capabilities (if not browser is set, deafults to chrome)
     @caps = BROWSERSTACK_CONFIG['common_caps'].merge(BROWSERSTACK_CONFIG['browser_caps'][test_browser])
 
     #sets timestamp as build name along with target browser
-    @caps['build'] = "#{Time.now.utc.iso8601} - #{test_browser}"
+    @caps['build'] = BUILD
+    
+    #sets project name
+    @caps['common_caps']['project'] = PROJECT_NAME
 
     #all set, instanciate new remote broser
     Capybara::Selenium::Driver.new(app,

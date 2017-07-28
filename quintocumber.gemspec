@@ -42,4 +42,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "capybara", "~> 2.14"
   spec.add_dependency "selenium-webdriver", "~> 3.4"
   spec.add_dependency "allure-cucumber", "~> 0.5"
+  spec.add_dependency "factory_girl", "~> 4.8"
+  spec.add_dependency "faker", "~> 1.8"
+  spec.add_dependency "httparty", "~> 0.15"
+  spec.add_dependency "aws-sdk", "~> 2.10"
 end

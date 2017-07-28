@@ -1,6 +1,4 @@
 server: hub-cloud.browserstack.com
-common_caps:
-  project: UNKOWN PROJECT
 browser_caps:
   chrome:
     browser: chrome

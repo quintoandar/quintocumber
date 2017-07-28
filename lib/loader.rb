@@ -1,6 +1,8 @@
 require_relative "env"
 
-Dir[File.join(File.dirname(__FILE__), "config/**/*.rb")].each do |file|
+require_relative "quintocumber_config"
+
+Dir[File.join(File.dirname(__FILE__), "plugins/**/*.rb")].each do |file|
   require file 
 end
 
