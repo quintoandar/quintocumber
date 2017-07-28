@@ -27,10 +27,8 @@ if BROWSERSTACK_CONFIG['user'] && BROWSERSTACK_CONFIG['key']
       raise 'Remote browser not configured in browsertack.yaml'
     end
 
-    
-
     #merge common capabilities and browser capabilities (if not browser is set, deafults to chrome)
-    @caps = BROWSERSTACK_CONFIG['common_caps'].merge(BROWSERSTACK_CONFIG['browser_caps'][test_browser])
+    @caps = BROWSERSTACK_CONFIG['common_caps'].merge(BROWSERSTACK_CONFIG['browser_caps'][TEST_BROWSER])
 
     #sets timestamp as build name along with target browser
     @caps['build'] = BUILD
