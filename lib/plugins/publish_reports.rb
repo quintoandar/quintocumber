@@ -16,6 +16,7 @@ at_exit do
   bucket_region = ENV['REPORT_BUCKET_REGION'] || 'us-east-1'
   report_url = nil
   if bucket && system('allure --help >> /dev/null')
+    puts "Generating allure report and uploading to s3"
     system('allure generate --clean reports')
     Dir[File.join(Dir.pwd, "allure-report/**/*")].each do |file|
       if not File.directory?(file)
@@ -29,7 +30,8 @@ at_exit do
     end
     report_url = "http://#{bucket}.s3-website-#{bucket_region}.amazonaws.com/#{URI.escape(BUILD)}"
   end
-  if ENV['PAGERDUTY_ROUTING_KEY'] && PUBLISH_REPORTS_TESTS_FAILED.length
+  if ENV['PAGERDUTY_ROUTING_KEY'] && PUBLISH_REPORTS_TESTS_FAILED.length > 0
+    puts "Sending test failed alert to PagerDuty"
     payload = {
       :payload => {
         :summary => "#{PUBLISH_REPORTS_TESTS_FAILED.length} #{PROJECT_NAME} test(s) failed",
