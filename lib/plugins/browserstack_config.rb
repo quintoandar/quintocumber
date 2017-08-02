@@ -2,34 +2,34 @@ require 'capybara/cucumber'
 
 #Get browserstack configuration from browserstack.yml 
 #and override credentials if credentials are set in env variables
-BROWSERSTACK_DEFAULT_CONFIG = YAML.load(File.read(File.join(File.dirname(__FILE__), "./browserstack.yml")))
+browserstack_default_config = YAML.load(File.read(File.join(File.dirname(__FILE__), "./browserstack.yml")))
 
 browserstack_project_config_filename = File.join(Dir.pwd, "./browserstack.yml")
 if File.file?(browserstack_project_config_filename)
-  BROWSERSTACK_PROJECT_CONFIG = YAML.load(File.read(browserstack_project_config_filename)) || Hash.new
+  browserstack_project_config = YAML.load(File.read(browserstack_project_config_filename)) || Hash.new
 else
-  BROWSERSTACK_PROJECT_CONFIG = Hash.new
+  browserstack_project_config = Hash.new
 end
 
-BROWSERSTACK_CONFIG = BROWSERSTACK_DEFAULT_CONFIG.merge(BROWSERSTACK_PROJECT_CONFIG)
+browserstack_config = browserstack_default_config.merge(browserstack_project_config)
 
-BROWSERSTACK_CONFIG['user'] = ENV['BROWSERSTACK_USERNAME'] || BROWSERSTACK_CONFIG['user']
-BROWSERSTACK_CONFIG['key'] = ENV['BROWSERSTACK_ACCESS_KEY'] || BROWSERSTACK_CONFIG['key']
+browserstack_config['user'] = ENV['BROWSERSTACK_USERNAME'] || browserstack_config['user']
+browserstack_config['key'] = ENV['BROWSERSTACK_ACCESS_KEY'] || browserstack_config['key']
 
 #Only user browserstack if credentials are set
-if BROWSERSTACK_CONFIG['user'] && BROWSERSTACK_CONFIG['key']
+if browserstack_config['user'] && browserstack_config['key']
   #Register browserstack remote driver into Capybara context
   Capybara.register_driver :browserstack do |app|
 
     #check if target browser is properly configured in browsertack.yaml
     #if no target browser is defined, skip verification due to later override
-    if ENV['TEST_BROWSER'] && BROWSERSTACK_CONFIG['browser_caps'][ENV['TEST_BROWSER']].nil?
+    if ENV['TEST_BROWSER'] && browserstack_config['browser_caps'][ENV['TEST_BROWSER']].nil?
       raise 'Remote browser not configured in browsertack.yaml'
     end
 
     #merge common capabilities and browser capabilities (if not browser is set, deafults to chrome)
-    BROWSERSTACK_CONFIG['common_caps'] = BROWSERSTACK_CONFIG['common_caps'] || {}
-    @caps = BROWSERSTACK_CONFIG['common_caps'].merge(BROWSERSTACK_CONFIG['browser_caps'][TEST_BROWSER])
+    browserstack_config['common_caps'] = browserstack_config['common_caps'] || {}
+    @caps = browserstack_config['common_caps'].merge(browserstack_config['browser_caps'][TEST_BROWSER])
 
     #sets timestamp as build name along with target browser
     @caps['build'] = BUILD
@@ -40,7 +40,7 @@ if BROWSERSTACK_CONFIG['user'] && BROWSERSTACK_CONFIG['key']
     #all set, instanciate new remote broser
     Capybara::Selenium::Driver.new(app,
       :browser => :remote,
-      :url => "http://#{BROWSERSTACK_CONFIG['user']}:#{BROWSERSTACK_CONFIG['key']}@#{BROWSERSTACK_CONFIG['server']}/wd/hub",
+      :url => "http://#{browserstack_config['user']}:#{browserstack_config['key']}@#{browserstack_config['server']}/wd/hub",
       :desired_capabilities => @caps
     )
   end

@@ -1,6 +1,6 @@
 AfterConfiguration do |config|
   config.on_event :after_test_step do |event|
-    if not event.result.ok?
+    if !ENV['DISABLE_REPORTS_SCREENSHOT'] && !event.result.ok?
       filename = "#{event.test_case.name}/#{event.test_step.name}.png"
       Capybara.page.save_screenshot(filename)
       class Includer 
