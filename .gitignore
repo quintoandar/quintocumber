@@ -3,3 +3,4 @@ tmp/
 Gemfile.lock
 quintocumber-*.gem
 pkg/
+coverage
