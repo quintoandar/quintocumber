@@ -63,11 +63,6 @@ Before do |scenario|
     #Put scenario name on options
     opts[:desired_capabilities] = opts[:desired_capabilities].merge({"name" => scenario.name})
 
-    #Re-register browserstack with new options
-    Capybara.register_driver :browserstack do |app|
-      Capybara::Selenium::Driver.new(app, opts)
-    end
-
     #Ensure Capybara will get the most recent driver registered (Kinda MAGIC; don't touch)
     Capybara.current_driver = :browserstack
   end

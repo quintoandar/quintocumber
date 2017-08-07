@@ -1,10 +1,5 @@
 #!/usr/bin/env ruby
-require 'cucumber/cli/main'
 
-loader_file = File.join(File.dirname(__FILE__), "../lib/loader.rb")
+require 'quintocumber'
 
-cmd_args = "#{ARGV.join(' ')}"
-
-args = "--format pretty --format AllureCucumber::Formatter --out reports --require #{loader_file} #{cmd_args}".split(/\s+/)
-
-Cucumber::Cli::Main.new(args).execute!
+Quintocumber::Cli::Main.new(ARGV.dup).execute!

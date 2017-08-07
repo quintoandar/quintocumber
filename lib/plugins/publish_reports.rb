@@ -17,6 +17,7 @@ at_exit do
   report_url = nil
   if bucket && system('allure --help >> /dev/null')
     puts "Generating allure report and uploading to s3"
+    report_url = "http://#{bucket}.s3-website-#{bucket_region}.amazonaws.com/#{URI.escape(BUILD)}"
     system('allure generate --clean reports')
     Dir[File.join(Dir.pwd, "allure-report/**/*")].each do |file|
       if not File.directory?(file)
@@ -28,7 +29,6 @@ at_exit do
         obj.acl.put({ acl: "public-read" })
       end
     end
-    report_url = "http://#{bucket}.s3-website-#{bucket_region}.amazonaws.com/#{URI.escape(BUILD)}"
   end
   if ENV['PAGERDUTY_ROUTING_KEY'] && PUBLISH_REPORTS_TESTS_FAILED.length > 0
     puts "Sending test failed alert to PagerDuty"
@@ -47,6 +47,7 @@ at_exit do
         :href => report_url,
         :text => "Report for #{BUILD}"
       }]
+      puts "Sending s3 report url to PagerDuty"
     end
     response = HTTParty.post "https://events.pagerduty.com/v2/enqueue",
                         headers:{ "Content-Type" => "application/json"},
