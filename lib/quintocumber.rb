@@ -1,19 +1,22 @@
+# frozen_string_literal: true
+
 require 'quintocumber/version'
 require 'cucumber/cli/main'
 
 module Quintocumber
   module Cli
     class Main
-      def initialize(args, _=nil, out=STDOUT, err=STDERR, kernel=Kernel)
+      def initialize(args, _ = nil, out = STDOUT, err = STDERR, kernel = Kernel)
         @args   = args
         @out    = out
         @err    = err
         @kernel = kernel
       end
+
       def execute!
         if ENV['TESTS']
           require 'setup_tests/coverage'
-          require 'setup_tests/mocks' 
+          require 'setup_tests/mocks'
         end
         loader_file = File.join(File.dirname(__FILE__), '/loader.rb')
         cmd_args = @args.join(' ')

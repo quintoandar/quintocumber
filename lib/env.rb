@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rubygems'
 require 'selenium/webdriver'
 require 'rspec'
@@ -10,8 +12,8 @@ require 'factory_girl'
 Capybara.default_max_wait_time = 10
 Capybara.save_path = 'screenshots/'
 
-After do |scenario|
-  Capybara.current_session.driver.quit()
+After do |_scenario|
+  Capybara.current_session.driver.quit
 end
 
 Capybara.default_driver = :wip

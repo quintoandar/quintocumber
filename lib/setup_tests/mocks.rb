@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'webmock'
 include WebMock::API
 
@@ -17,7 +19,7 @@ browserstack_mock_post1_reponse = '''
 
 browserstack_mock_post2_reponse = '''
 {"state":"success","sessionId":"6b04a40d32157861f90f4b624bbf40090fdb9477","hCode":6531147,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
-''' 
+'''
 
 browserstack_mock_delete_reponse = '''
 {"state":"success", "status": 0}

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cucumber/cli/main'
 
 loader_file = File.join(File.dirname(__FILE__), 'loader.rb')
