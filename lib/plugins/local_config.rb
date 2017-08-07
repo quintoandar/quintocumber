@@ -1,4 +1,4 @@
 Capybara.register_driver :wip do |app|
-  test_browser = ENV['TEST_BROWSER'] || "firefox"
+  test_browser = ENV['TEST_BROWSER'] || 'firefox'
   Capybara::Selenium::Driver.new(app, browser: test_browser.to_sym)
 end

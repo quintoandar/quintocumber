@@ -8,7 +8,7 @@ require 'rspec/expectations'
 require 'factory_girl'
 
 Capybara.default_max_wait_time = 10
-Capybara.save_path = "screenshots/"
+Capybara.save_path = 'screenshots/'
 
 After do |scenario|
   Capybara.current_session.driver.quit()

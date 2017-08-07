@@ -1,5 +1,5 @@
-require "quintocumber/version"
-require "cucumber/cli/main"
+require 'quintocumber/version'
+require 'cucumber/cli/main'
 
 module Quintocumber
   module Cli
@@ -15,7 +15,7 @@ module Quintocumber
           require 'setup_tests/coverage'
           require 'setup_tests/mocks' 
         end
-        loader_file = File.join(File.dirname(__FILE__), "/loader.rb")
+        loader_file = File.join(File.dirname(__FILE__), '/loader.rb')
         cmd_args = @args.join(' ')
         args = "--format pretty --format AllureCucumber::Formatter --out reports --require #{loader_file} #{cmd_args}".split(/\s+/)
         result = Cucumber::Cli::Main.new(args, nil, @out, @err, @kernel).execute!
