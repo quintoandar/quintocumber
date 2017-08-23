@@ -18,9 +18,8 @@ Or install it yourself as:
 
 ## Usage
 
-```
-    $quintocumber
-```
+    $ quintocumber
+
 
 ## Development
 
@@ -33,7 +32,7 @@ Install development external dependencies:
 
 To install this gem onto your local machine, run `bundle exec rake install`. 
 
-To run all tests: `bundle exec cucumber`
+To run all tests: `bin/test`
 
 To release a new version run `gem bump --version (major|minor|patch)`, which will create a git tag and commit for the version. Push the new commit and tag with `git push`.
 
