@@ -68,9 +68,7 @@ def report_to_pagerduty(report_url, tests_failed)
   return unless ENV['PAGERDUTY_ROUTING_KEY'] && !tests_failed.empty?
   puts 'Sending test failed alert to PagerDuty'
   payload = pagerduty_payload(tests_failed.length, tests_failed.join('\n- '))
-  if report_url
-    insert_report_url_on_pagerduty_payload(report_url, payload)
-  end
+  insert_report_url_on_pagerduty_payload(report_url, payload) if report_url
   HTTParty.post 'https://events.pagerduty.com/v2/enqueue',
                 headers: { 'Content-Type' => 'application/json' },
                 body: payload.to_json

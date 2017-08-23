@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+rubocop || exit 1
+[ -e file ] && rm -rf ./coverage 
+bundle exec cucumber && echo "Coverage report generated to: $(pwd)/coverage/index.html"
