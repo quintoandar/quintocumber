@@ -4,3 +4,4 @@ Gemfile.lock
 quintocumber-*.gem
 pkg/
 coverage
+.vscode/

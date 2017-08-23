@@ -1,57 +1,82 @@
+# frozen_string_literal: true
+
 require 'httparty'
 require 'aws-sdk'
 
-PUBLISH_REPORTS_TESTS_FAILED = []
+tests_failed = []
+
+def pagerduty_payload(failed_length, reports_list_str)
+  {
+    payload: {
+      summary: failed_length.to_s + ' #{PROJECT_NAME} test(s) failed',
+      source: '#{PROJECT_NAME}',
+      severity: 'critical',
+      custom_details: "Failed test(s):\n- #{reports_list_str}"
+    },
+    event_action: 'trigger',
+    routing_key: ENV['PAGERDUTY_ROUTING_KEY']
+  }
+end
 
 AfterConfiguration do |config|
   config.on_event :after_test_case do |event|
-    if not event.result.ok?
-      PUBLISH_REPORTS_TESTS_FAILED.push(event.test_case.name)
-    end
+    tests_failed.push(event.test_case.name) unless event.result.ok?
   end
+end
+
+def generate_report_and_upload_to_s3
+  bucket = ENV['REPORT_BUCKET']
+  bucket_region = ENV['REPORT_BUCKET_REGION']
+  return unless bucket && system('allure --help >> /dev/null')
+  puts 'Generating allure report and uploading to s3'
+  system('allure generate --clean reports')
+  upload_report_files_to_s3
+  "http://#{bucket}.s3-website-#{bucket_region}.amazonaws.com/" +
+    URI.escape(BUILD)
+end
+
+def upload_report_files_to_s3
+  s3 = instanciate_s3_connector
+  Dir[File.join(Dir.pwd, 'allure-report/**/*')].each do |file|
+    next if File.directory?(file)
+    upload_to_s3(s3, ENV['REPORT_BUCKET'], file)
+  end
+end
+
+def instanciate_s3_connector
+  bucket_region = ENV['REPORT_BUCKET_REGION'] || 'us-east-1'
+  Aws::S3::Resource.new(region: bucket_region)
+end
+
+def upload_to_s3(s3, bucket, file)
+  file_name = file.clone
+  file_name.sub! File.join(Dir.pwd, 'allure-report/'), ''
+  obj = s3.bucket(bucket).object('#{BUILD}/#{file_name}')
+  obj.upload_file(file)
+  obj.acl.put(acl: 'public-read')
+end
+
+def insert_report_url_on_pagerduty_payload(report_url, payload)
+  payload[:links] = [{
+    href: report_url,
+    text: 'Report for #{BUILD}'
+  }]
+  puts 'Sending s3 report url to PagerDuty'
+end
+
+def report_to_pagerduty(report_url, tests_failed)
+  return unless ENV['PAGERDUTY_ROUTING_KEY'] && !tests_failed.empty?
+  puts 'Sending test failed alert to PagerDuty'
+  payload = pagerduty_payload(tests_failed.length, tests_failed.join('\n- '))
+  if report_url
+    insert_report_url_on_pagerduty_payload(report_url, payload)
+  end
+  HTTParty.post 'https://events.pagerduty.com/v2/enqueue',
+                headers: { 'Content-Type' => 'application/json' },
+                body: payload.to_json
 end
 
 at_exit do
-  bucket = ENV['REPORT_BUCKET']
-  bucket_region = ENV['REPORT_BUCKET_REGION'] || 'us-east-1'
-  report_url = nil
-  if bucket && system('allure --help >> /dev/null')
-    puts 'Generating allure report and uploading to s3'
-    report_url = "http://#{bucket}.s3-website-#{bucket_region}.amazonaws.com/#{URI.escape(BUILD)}'
-    system('allure generate --clean reports')
-    Dir[File.join(Dir.pwd, 'allure-report/**/*')].each do |file|
-      if not File.directory?(file)
-        file_name = file.clone
-        file_name.sub! File.join(Dir.pwd, 'allure-report/'), ''
-        s3 = Aws::S3::Resource.new(region: bucket_region)
-        obj = s3.bucket(bucket).object('#{BUILD}/#{file_name}')
-        obj.upload_file(file)
-        obj.acl.put({ acl: 'public-read' })
-      end
-    end
-  end
-  if ENV['PAGERDUTY_ROUTING_KEY'] && PUBLISH_REPORTS_TESTS_FAILED.length > 0
-    puts 'Sending test failed alert to PagerDuty'
-    payload = {
-      :payload => {
-        :summary => '#{PUBLISH_REPORTS_TESTS_FAILED.length} #{PROJECT_NAME} test(s) failed',
-        :source => '#{PROJECT_NAME}',
-        :severity => 'critical',
-        :custom_details => 'Failed test(s):\n- #{PUBLISH_REPORTS_TESTS_FAILED.join('\n- ')}'
-      },
-      :event_action => 'trigger',
-      :routing_key => ENV['PAGERDUTY_ROUTING_KEY'],
-    }
-    if report_url
-      payload[:links] = [{
-        :href => report_url,
-        :text => 'Report for #{BUILD}'
-      }]
-      puts 'Sending s3 report url to PagerDuty'
-    end
-    response = HTTParty.post 'https://events.pagerduty.com/v2/enqueue',
-                        headers:{ 'Content-Type' => 'application/json"},
-                        body: payload.to_json
-  end
+  report_url = generate_report_and_upload_to_s3
+  report_to_pagerduty(report_url, tests_failed)
 end
-

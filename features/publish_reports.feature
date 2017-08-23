@@ -31,7 +31,7 @@ Feature: Publish reports
     end
   """
   
-  And  I set the environment variables to:
+  And I set the environment variables to:
           | variable                   | value |
           | PAGERDUTY_ROUTING_KEY      | dummy |  
           | DISABLE_REPORTS_SCREENSHOT | true  |
