@@ -19,7 +19,7 @@ def pagerduty_payload(failed_length, reports_list_str)
 end
 
 AfterConfiguration do |config|
-  config.on_event :after_test_case do |event|
+  config.on_event :test_case_finished do |event|
     tests_failed.push(event.test_case.name) unless event.result.ok?
   end
 end
