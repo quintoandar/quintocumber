@@ -2,5 +2,6 @@
   TargetRubyVersion: "2.3"
   Exclude:
     - 'quintocumber.gemspec'
+    - 'tmp/**/*'
 Style/Documentation:
   Enabled: false
