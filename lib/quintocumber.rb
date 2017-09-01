@@ -22,12 +22,31 @@ module Quintocumber
         loader_file = File.join(File.dirname(__FILE__), '/loader.rb')
         args = default_args(loader_file) + @args
         args.push("--format", "rerun", "--out", "failed.txt")
-        exit_code = begin
+
+        # TODO: Extract and improve this block
+        retry_attempts = 0
+        retry_attempts_idx = args.index("--retry")
+        if retry_attempts_idx
+            args.slice(retry_attempts_idx)
+            retry_attempts = args.slice(retry_attempts_idx + 1)
+            puts retry_attempts
+        end
+
+        begin 
           Cucumber::Cli::Main.new(args, nil, @out, @err, @kernel).execute!
-        ensure
-          puts "BLALAAAAAA"
-          # Cucumber::Cli::Main.new(args, nil, @out, @err, @kernel).execute!
-          puts exit_code
+        rescue SystemExit
+          i = 0
+          while i < retry_attempts.to_i
+            # TODO: Extract and improve this block
+            puts "Retry ##{i+1}"
+            args_to_retry = args.clone
+            args_to_retry + File.readlines("failed.txt")
+            begin
+              Cucumber::Cli::Main.new(args_to_retry, nil, @out, @err, @kernel).execute!
+            rescue SystemExit
+              i = i + 1
+            end
+          end
         end
       end
 
