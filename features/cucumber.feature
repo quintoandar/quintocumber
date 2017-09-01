@@ -51,5 +51,5 @@ Feature: Cucumber
     | variable                   | value |
     | DISABLE_REPORTS_SCREENSHOT | true  |
     
-    When I run `quintocumber --retry 1`
-    Then the output should contain "2 steps (2 failed)"
+    When I run `quintocumber --retry 2`
+    Then the output should contain "bla"
