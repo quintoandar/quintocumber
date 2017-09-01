@@ -21,7 +21,14 @@ module Quintocumber
         end
         loader_file = File.join(File.dirname(__FILE__), '/loader.rb')
         args = default_args(loader_file) + @args
-        Cucumber::Cli::Main.new(args, nil, @out, @err, @kernel).execute!
+        args.push("--format", "rerun", "--out", "failed.txt")
+        exit_code = begin
+          Cucumber::Cli::Main.new(args, nil, @out, @err, @kernel).execute!
+        ensure
+          puts "BLALAAAAAA"
+          # Cucumber::Cli::Main.new(args, nil, @out, @err, @kernel).execute!
+          puts exit_code
+        end
       end
 
       def default_args(loader_file)

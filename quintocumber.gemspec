@@ -28,13 +28,12 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler', '~> 1.15'
   spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'cucumber', '~> 3.0.0.pre.2'
   spec.add_development_dependency 'aruba', '~> 0.7'
   spec.add_development_dependency 'simplecov', '~> 0.14.1'
   spec.add_development_dependency 'webmock', '~> 3.0.1'
   spec.add_development_dependency 'rubocop', '~> 0.49.1'
 
-  spec.add_dependency 'cucumber', '~> 3.0.0.pre.2'
+  spec.add_dependency 'cucumber', '~> 2.4'
   spec.add_dependency 'rspec', '~> 3.6'
   spec.add_dependency 'site_prism', '~> 2.9'
   spec.add_dependency 'capybara', '~> 2.14'
