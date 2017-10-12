@@ -6,6 +6,6 @@ Capybara.register_driver :wip do |app|
   if selenium_server == "":
     Capybara::Selenium::Driver.new(app, browser: test_browser.to_sym)
   else
-    Capybara::Selenium::Driver.new(app, browser: remote, url: selenium_server, desired_capabilities: browser)
+    Capybara::Selenium::Driver.new(app, browser: remote, url: selenium_server, desired_capabilities: test_browser)
   end
 end
