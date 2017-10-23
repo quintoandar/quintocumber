@@ -30,11 +30,13 @@ Install development external dependencies:
 * Allure CLI 2.2.1 (https://github.com/allure-framework/allure2/releases/tag/2.2.1)
 * Firefox and geckodriver
 
-To install this gem onto your local machine, run `bundle exec rake install`. 
+To install this gem onto your local machine, run `bundle exec rake install`.
 
 To run all tests: `bin/test`
 
-To release a new version run `gem bump --version (major|minor|patch)`, which will create a git tag and commit for the version. Push the new commit and tag with `git push`.
+To release a new version run `bump patch`, which will create a git tag and commit for the version. Push the new commit and tag with `git push`.
+
+To generate a new gem, now run `gem build quintocumber.gemspec`.
 
 Push the `.gem` file to [rubygems.org](https://rubygems.org) using `gem push quintocumber-<NEW_VERSION_TAG>.gem`
 
