@@ -8,8 +8,8 @@ tests_failed = []
 def pagerduty_payload(failed_length, reports_list_str)
   {
     payload: {
-      summary: failed_length.to_s + ' #{PROJECT_NAME} test(s) failed',
-      source: '#{PROJECT_NAME}',
+      summary: failed_length.to_s + " #{PROJECT_NAME} test(s) failed",
+      source: "#{PROJECT_NAME}",
       severity: 'critical',
       custom_details: "Failed test(s):\n- #{reports_list_str}"
     },
@@ -26,7 +26,7 @@ end
 
 def generate_report_and_upload_to_s3
   bucket = ENV['REPORT_BUCKET']
-  bucket_region = ENV['REPORT_BUCKET_REGION']
+  bucket_region = ENV['REPORT_BUCKET_REGION'] || 'us-east-1'
   return unless bucket && system('allure --help >> /dev/null')
   puts 'Generating allure report and uploading to s3'
   system('allure generate --clean reports')
@@ -51,7 +51,7 @@ end
 def upload_to_s3(s3, bucket, file)
   file_name = file.clone
   file_name.sub! File.join(Dir.pwd, 'allure-report/'), ''
-  obj = s3.bucket(bucket).object('#{BUILD}/#{file_name}')
+  obj = s3.bucket(bucket).object("#{BUILD}/#{file_name}")
   obj.upload_file(file)
   obj.acl.put(acl: 'public-read')
   puts "Sending #{BUILD}/#{file_name} to #{bucket}"
@@ -60,7 +60,7 @@ end
 def insert_report_url_on_pagerduty_payload(report_url, payload)
   payload[:links] = [{
     href: report_url,
-    text: 'Report for #{BUILD}'
+    text: "Report for #{BUILD}"
   }]
   puts 'Sending s3 report url to PagerDuty'
 end
