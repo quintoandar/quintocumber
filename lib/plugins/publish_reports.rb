@@ -2,6 +2,7 @@
 
 require 'httparty'
 require 'aws-sdk'
+require 'json'
 
 tests_failed = []
 
@@ -9,7 +10,7 @@ def pagerduty_payload(failed_length, reports_list_str)
   {
     payload: {
       summary: failed_length.to_s + " #{PROJECT_NAME} test(s) failed",
-      source: "#{PROJECT_NAME}",
+      source: PROJECT_NAME.to_s,
       severity: 'critical',
       custom_details: "Failed test(s):\n- #{reports_list_str}"
     },
@@ -75,8 +76,60 @@ def report_to_pagerduty(report_url, tests_failed)
                 body: payload.to_json
 end
 
+def notify_slack(webhook_url, payload)
+  HTTParty.post webhook_url.to_s,
+                headers: { 'Content-Type' => 'application/json' },
+                body: payload.to_json
+end
+
+def slack_text(report_url, tests_failed)
+  txt = if tests_failed.empty?
+          'Success! All tests passed.'
+        else
+          "Failure! There are #{tests_failed.length} failed tests: "\
+          "\n\t#{tests_failed.join("\n\t")}"\
+        end
+  txt
+end
+
+def slack_pretext(report_url)
+  pretext = if report_url
+              "Full report at #{report_url}"
+            else
+              'Report was not published.'
+            end
+  pretext
+end
+
+def slack_color(tests_failed)
+  color = if tests_failed.empty?
+            'good'
+          else
+            'danger'
+          end
+  color
+end
+
+def slack_payload(report_url, tests_failed)
+  {
+    attachments: [
+      pretext: slack_pretext(report_url),
+      text: slack_text(report_url, tests_failed),
+      color: slack_color(tests_failed)
+    ]
+  }
+end
+
+def report_to_slack(report_url, tests_failed)
+  return unless ENV['SLACK_WEBHOOK_URL']
+  puts 'Sending test report link to Slack'
+  payload = slack_payload(report_url, tests_failed)
+  notify_slack(ENV['SLACK_WEBHOOK_URL'], payload)
+end
+
 at_exit do
   report_url = generate_report_and_upload_to_s3
-  puts "Report url: #{report_url}"
+  puts "Report url: #{report_url}" if report_url
+  report_to_slack(report_url, tests_failed)
   report_to_pagerduty(report_url, tests_failed)
 end
