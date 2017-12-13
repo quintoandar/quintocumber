@@ -54,6 +54,7 @@ def upload_to_s3(s3, bucket, file)
   obj = s3.bucket(bucket).object('#{BUILD}/#{file_name}')
   obj.upload_file(file)
   obj.acl.put(acl: 'public-read')
+  puts "Sending #{BUILD}/#{file_name} to #{bucket}"
 end
 
 def insert_report_url_on_pagerduty_payload(report_url, payload)
@@ -76,5 +77,6 @@ end
 
 at_exit do
   report_url = generate_report_and_upload_to_s3
+  puts "Report url: #{report_url}"
   report_to_pagerduty(report_url, tests_failed)
 end
