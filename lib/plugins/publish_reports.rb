@@ -2,6 +2,7 @@
 
 require 'httparty'
 require 'aws-sdk'
+require 'json'
 
 tests_failed = []
 
@@ -9,7 +10,7 @@ def pagerduty_payload(failed_length, reports_list_str)
   {
     payload: {
       summary: failed_length.to_s + " #{PROJECT_NAME} test(s) failed",
-      source: "#{PROJECT_NAME}",
+      source: PROJECT_NAME.to_s,
       severity: 'critical',
       custom_details: "Failed test(s):\n- #{reports_list_str}"
     },
@@ -75,8 +76,33 @@ def report_to_pagerduty(report_url, tests_failed)
                 body: payload.to_json
 end
 
+def notify_slack(webhook_url, text, color)
+  payload = {
+    text: text,
+    color: color
+  }
+  HTTParty.post webhook_url.to_s,
+                headers: { 'Content-Type' => 'application/json' },
+                body: payload.to_json
+end
+
+def report_to_slack(report_url, tests_failed)
+  return unless ENV['SLACK_WEBHOOK_URL']
+  puts 'Sending test report link to Slack'
+  if tests_failed.empty?
+    msg = "Success! Full report is available at #{report_url}"
+    notify_slack(ENV['SLACK_WEBHOOK_URL'], msg, 'good')
+  else
+    msg = "Failure! There are #{tests_failed.length} failed tests: "\
+          "#{tests_failed.join('\n- ')}\n\n"\
+          "Full report is available at #{report_url}"
+    notify_slack(ENV['SLACK_WEBHOOK_URL'], msg, 'danger')
+  end
+end
+
 at_exit do
   report_url = generate_report_and_upload_to_s3
   puts "Report url: #{report_url}"
   report_to_pagerduty(report_url, tests_failed)
+  report_to_slack(report_url, tests_failed)
 end

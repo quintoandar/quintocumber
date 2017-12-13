@@ -5,3 +5,7 @@ quintocumber-*.gem
 pkg/
 coverage
 .vscode/
+
+# Bundler
+vendor
+.bundle
