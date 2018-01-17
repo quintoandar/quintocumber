@@ -20,6 +20,15 @@ Or install it yourself as:
 
     $ quintocumber
 
+The following environment variables allow you to you to configure the appllication behavior:
+
+| Key  | Description |
+| ------------- | ------------- |
+| BROWSERSTACK_USERNAME | username for Browserstack account  |
+| BROWSERSTACK_ACCESS_KEY | access key for Browserstack account |
+| SLACK_WEBHOOK_URL | webhook for slack notifications |
+| REPORT_BUCKET | s3 bucket to save allure reports |
+| PAGERDUTY_ROUTING_KEY | pager duty Events Api v2 integration key |
 
 ## Development
 
