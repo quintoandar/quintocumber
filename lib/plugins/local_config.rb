@@ -1,11 +1,25 @@
 # frozen_string_literal: true
 
+def get_remote_capabilities(test_browser)
+  if test_browser.eql? 'chrome_headless'
+    return Selenium::WebDriver::Remote::Capabilities.chrome(
+      chromeOptions: { args: %w[headless disable-gpu] }
+    )
+  end
+  test_browser.to_sym
+end
+
 Capybara.register_driver :wip do |app|
   test_browser = ENV['TEST_BROWSER'] || 'chrome'
   selenium_server = ENV['SELENIUM_SERVER']
-  if ENV['SELENIUM_SERVER'].nil?
+  if selenium_server.nil?
     Capybara::Selenium::Driver.new(app, browser: test_browser.to_sym)
   else
-    Capybara::Selenium::Driver.new(app, browser: :remote, url: selenium_server, desired_capabilities: test_browser.to_sym)
+    Capybara::Selenium::Driver.new(
+      app,
+      browser: :remote,
+      url: selenium_server,
+      desired_capabilities: get_remote_capabilities(test_browser)
+    )
   end
 end
