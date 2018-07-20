@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rspec', '~> 3.6'
   spec.add_dependency 'site_prism', '~> 2.9'
   spec.add_dependency 'capybara', '~> 2.14'
-  spec.add_dependency 'selenium-webdriver', '~> 3.4'
+  spec.add_dependency 'selenium-webdriver', '~> 3.13.0'
   spec.add_dependency 'allure-cucumber', '~> 0.5'
   spec.add_dependency 'factory_girl', '~> 4.8'
   spec.add_dependency 'faker', '~> 1.8'
