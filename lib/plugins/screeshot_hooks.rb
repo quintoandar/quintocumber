@@ -6,9 +6,9 @@ class AllureCucumberDSLTemp
 end
 
 AfterConfiguration do |config|
-  config.on_event :after_test_step do |event|
+  config.on_event :test_step_finished do |event|
     if !ENV['DISABLE_REPORTS_SCREENSHOT'] && !event.result.ok?
-      filename = "#{event.test_case.name}/#{event.test_step.name}.png"
+      filename = "#{event.test_step.location.to_s}.png"
       Capybara.page.save_screenshot(filename)
       AllureCucumberDSLTemp.attach_file(
         filename,
