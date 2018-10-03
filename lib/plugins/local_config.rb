@@ -2,11 +2,14 @@
 
 def get_remote_capabilities(test_browser, window_size)
   if test_browser.eql? 'chrome_headless'
-    return Selenium::WebDriver::Remote::Capabilities.chrome(
-      chromeOptions: { args: %W(headless disable-gpu window-size=#{window_size})}
-    )
+    opts = {
+      chromeOptions: { 
+        args: %W(headless disable-gpu window-size=#{window_size})
+      },
+      javascript_enabled: false,
+    }
+    return Selenium::WebDriver::Remote::Capabilities.chrome(opts)
   end
-  test_browser.to_sym
 end
 
 Capybara.register_driver :wip do |app|
