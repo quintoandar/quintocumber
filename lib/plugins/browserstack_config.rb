@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 require 'capybara/cucumber'
+require 'logger'
+
+logger = Logger.new(STDOUT)
+logger.level = Logger::DEBUG
 
 # Get browserstack configuration from browserstack.yml
 # and override credentials if credentials are set in env variables
@@ -42,6 +46,11 @@ if browserstack_config['user'] && browserstack_config['key']
     browserstack_config['common_caps'] = browserstack_config['common_caps'] ||
                                          {}
 
+    # Using local browserstack according to env var
+    if ENV['BROWSERSTACK_LOCAL'] && ENV['BROWSERSTACK_LOCAL'].to_s  == 'true'
+      browserstack_config['common_caps']['browserstack.local'] = true
+    end
+
     @caps = browserstack_config['common_caps'].merge(
       browserstack_config['browser_caps'][TEST_BROWSER]
     )
@@ -52,7 +61,8 @@ if browserstack_config['user'] && browserstack_config['key']
     # sets project name
     @caps['project'] = PROJECT_NAME
 
-    # all set, instanciate new remote broser
+    logger.info("Instanciate new remote browser with desired caps: %s" % @caps)
+    # all set, instanciate new remote browser
     Capybara::Selenium::Driver.new(
       app,
       browser: :remote,
