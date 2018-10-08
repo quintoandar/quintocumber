@@ -26,6 +26,7 @@ The following environment variables allow you to you to configure the appllicati
 | ------------- | ------------- |
 | BROWSERSTACK_USERNAME | username for Browserstack account  |
 | BROWSERSTACK_ACCESS_KEY | access key for Browserstack account |
+| BROWSERSTACK_LOCAL | uses local Browserstack if set to `true` |
 | SLACK_WEBHOOK_URL | webhook for slack notifications |
 | REPORT_BUCKET | s3 bucket to save allure reports |
 | PAGERDUTY_ROUTING_KEY | pager duty Events Api v2 integration key |
@@ -48,6 +49,12 @@ To release a new version run `bump patch`, which will create a git tag and commi
 To generate a new gem, now run `gem build quintocumber.gemspec`.
 
 Push the `.gem` file to [rubygems.org](https://rubygems.org) using `gem push quintocumber-<NEW_VERSION_TAG>.gem`
+
+## Using Browserstack locally
+You may want to run tests on Browserstack against a local version or on a protected envirionment. ([More use cases](https://www.browserstack.com/local-testing#configuration))
+You'll need:
+1. Set env vars `BROWSERSTACK_LOCAL=true` and `BROWSERSTACK_USERNAME`, `BROWSERSTACK_ACCESS_KEY`
+2. Have the [local binary running](https://www.browserstack.com/local-testing#command-line)
 
 ## Contributing
 
