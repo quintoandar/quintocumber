@@ -12,3 +12,10 @@ browser_caps:
     os: OS X
     os_version: El Capitan
     resolution: 1600x1200
+  chrome41:
+    browser: chrome
+    version: 41
+    os: windows
+    os_version: 10
+    resolution: 1366x768
+    browserstack.selenium_version: 2.46.0
